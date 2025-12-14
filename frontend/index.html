@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кассир - Столовая</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .category-card {
+            background: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+        }
+        .dish-card {
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .dish-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .order-item {
+            border-bottom: 1px solid #dee2e6;
+            padding: 8px 0;
+        }
+        #total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #198754;
+        }
+        .quantity-badge {
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2">
+                <i class="bi bi-cash-stack text-primary"></i> Кассир - Столовая
+            </h1>
+            <div>
+                <button class="btn btn-outline-secondary btn-sm" onclick="window.open('/static/admin.html', '_blank')">
+                    <i class="bi bi-gear"></i> Админ
+                </button>
+                <button class="btn btn-outline-info btn-sm ms-2" onclick="window.open('/static/reports.html', '_blank')">
+                    <i class="bi bi-graph-up"></i> Отчеты
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Левая колонка: Меню -->
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-menu-app"></i> Меню
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="menu">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Загрузка...</span>
+                                </div>
+                                <p class="mt-2">Загрузка меню...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сегодняшние заказы -->
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-clock-history"></i> Сегодняшние заказы
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="today-orders">
+                            <div class="text-center">
+                                <div class="spinner-border text-info" role="status">
+                                    <span class="visually-hidden">Загрузка...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Текущий заказ -->
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-cart"></i> Текущий заказ
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Список позиций -->
+                        <div id="order-items" class="mb-3">
+                            <p class="text-muted text-center">Заказ пуст. Выберите блюда из меню.</p>
+                        </div>
+
+                        <!-- Итог -->
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="card-subtitle mb-2 text-muted">Итого:</h6>
+                                    <div id="total-amount" class="h5 mb-0">0.00 ₽</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button id="submit-order" class="btn btn-success btn-lg" onclick="submitOrder()" disabled>
+                                <i class="bi bi-check-circle"></i> Оформить заказ
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="clearOrder()">
+                                <i class="bi bi-trash"></i> Очистить заказ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Информация -->
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-info-circle"></i> Информация
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text small">
+                            <strong>Инструкция:</strong><br>
+                            1. Нажмите на блюдо для добавления<br>
+                            2. В текущем заказе можно менять количество<br>
+                            3. Нажмите "Оформить заказ" для фиксации
+                        </p>
+                        <div class="alert alert-warning small mb-0">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Для управления меню используйте панель администратора
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Наш скрипт -->
+    <script src="/static/js/cashier.js"></script>
+</body>
+</html>

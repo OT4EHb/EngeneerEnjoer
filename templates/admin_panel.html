@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ Админ панель - Ресторан "Вкусный уголок"</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            background: var(--secondary-color);
+            color: white;
+            min-height: 100vh;
+            padding: 0;
+            position: fixed;
+            width: 250px;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h3 {
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding-left: 25px;
+        }
+
+        .nav-item.active {
+            background: var(--primary-color);
+            color: white;
+            border-left: 4px solid white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .stat-card h5 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        .section-header h3 {
+            color: var(--secondary-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-custom {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table th {
+            background: var(--light-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+            border: none;
+            padding: 15px;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-unavailable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        .back-to-site {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-to-site a {
+            color: var(--primary-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-to-site a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                min-height: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-cog"></i> Админ панель</h3>
+            <p class="mb-0" style="color: #bdc3c7; font-size: 0.9rem;">Ресторан "Вкусный уголок"</p>
+        </div>
+        
+        <div class="sidebar-nav">
+            <div class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Дашборд
+            </div>
+            <div class="nav-item" onclick="showSection('menu')">
+                <i class="fas fa-utensils"></i> Управление меню
+            </div>
+            <div class="nav-item" onclick="showSection('orders')">
+                <i class="fas fa-shopping-cart"></i> Заказы
+            </div>
+            <div class="nav-item" onclick="showSection('reports')">
+                <i class="fas fa-chart-bar"></i> Отчеты
+            </div>
+            <div class="nav-item" onclick="showSection('settings')">
+                <i class="fas fa-cogs"></i> Настройки
+            </div>
+        </div>
+
+        <div class="back-to-site">
+            <a href="/" target="_blank">
+                <i class="fas fa-external-link-alt"></i> Перейти на сайт
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="section">
+            <div class="navbar">
+                <h2><i class="fas fa-tachometer-alt"></i> Дашборд</h2>
+                <div id="current-time" style="color: var(--secondary-color);"></div>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h5><i class="fas fa-utensils"></i> Всего блюд</h5>
+                    <div class="stat-value" id="total-dishes">0</div>
+                </div>
+                <div class="stat-card">
+                    <h5><i class="fas fa-shopping-cart"></i> Заказов сегодня</h5>
+                    <div class="stat-value" id="today-orders">0</div>
+                </div>
+                <div class="stat-card">
+                    <h5><i class="fas fa-money-bill-wave"></i> Выручка сегодня</h5>
+                    <div class="stat-value" id="today-revenue">0 ₽</div>
+                </div>
+                <div class="stat-card">
+                    <h5><i class="fas fa-star"></i> Рейтинг</h5>
+                    <div class="stat-value">4.8/5</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-chart-line"></i> Статистика заказов</h3>
+                            <select class="form-select" style="width: auto;" id="chart-period">
+                                <option value="7">7 дней</option>
+                                <option value="30" selected>30 дней</option>
+                                <option value="90">90 дней</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="orders-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-fire"></i> Популярные блюда</h3>
+                        </div>
+                        <div id="popular-dishes">
+                            <!-- Popular dishes will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Management Section -->
+        <div id="menu-section" class="section" style="display: none;">
+            <div class="navbar">
+                <h2><i class="fas fa-utensils"></i> Управление меню</h2>
+                <div>
+                    <button class="btn-custom btn-primary" onclick="showAddCategoryModal()">
+                        <i class="fas fa-plus"></i> Добавить категорию
+                    </button>
+                    <button class="btn-custom btn-success" onclick="showAddDishModal()">
+                        <i class="fas fa-plus"></i> Добавить блюдо
+                    </button>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-list"></i> Категории</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Кол-во блюд</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-table">
+                            <!-- Categories will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-hamburger"></i> Все блюда</h3>
+                    <input type="text" class="form-control" style="width: 300px;" 
+                           placeholder="Поиск по названию..." id="dish-search">
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Категория</th>
+                                <th>Цена</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dishes-table">
+                            <!-- Dishes will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="orders-section" class="section" style="display: none;">
+            <div class="navbar">
+                <h2><i class="fas fa-shopping-cart"></i> Управление заказами</h2>
+                <div>
+                    <select class="form-select" style="width: auto;" id="orders-filter">
+                        <option value="">Все статусы</option>
+                        <option value="pending">В ожидании</option>
+                        <option value="preparing">Готовится</option>
+                        <option value="ready">Готов</option>
+                        <option value="completed">Завершен</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Номер</th>
+                                <th>Дата</th>
+                                <th>Клиент</th>
+                                <th>Телефон</th>
+                                <th>Сумма</th>
+                                <th>Статус</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table">
+                            <!-- Orders will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports-section" class="section" style="display: none;">
+            <div class="navbar">
+                <h2><i class="fas fa-chart-bar"></i> Отчеты</h2>
+                <div>
+                    <button class="btn-custom btn-primary" onclick="generateReport()">
+                        <i class="fas fa-download"></i> Экспорт отчета
+                    </button>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-calendar"></i> Период отчета</h3>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <label class="form-label">Начальная дата</label>
+                        <input type="date" class="form-control" id="report-start-date">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Конечная дата</label>
+                        <input type="date" class="form-control" id="report-end-date">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn-custom btn-primary w-100" onclick="loadReport()">
+                            <i class="fas fa-chart-line"></i> Сгенерировать
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5>Общая выручка</h5>
+                            <div class="stat-value" id="report-total-revenue">0 ₽</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5>Всего заказов</h5>
+                            <div class="stat-value" id="report-total-orders">0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h5>Средний чек</h5>
+                            <div class="stat-value" id="report-avg-order">0 ₽</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="chart-container">
+                            <canvas id="revenue-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-container">
+                            <canvas id="categories-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="section" style="display: none;">
+            <div class="navbar">
+                <h2><i class="fas fa-cogs"></i> Настройки</h2>
+            </div>
+
+            <div class="section-card">
+                <h4><i class="fas fa-restaurant"></i> Настройки ресторана</h4>
+                <form id="restaurant-settings">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Название ресторана</label>
+                            <input type="text" class="form-control" value="Ресторан 'Вкусный уголок'">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Телефон для заказов</label>
+                            <input type="tel" class="form-control" value="+7 (999) 123-45-67">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Время работы (открытие)</label>
+                            <input type="time" class="form-control" value="10:00">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Время работы (закрытие)</label>
+                            <input type="time" class="form-control" value="23:00">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Минимальная сумма заказа</label>
+                        <input type="number" class="form-control" value="500">
+                    </div>
+                    <button type="submit" class="btn-custom btn-primary">Сохранить настройки</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-folder-plus"></i> Новая категория</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-category-form">
+                        <div class="mb-3">
+                            <label class="form-label">Название категории</label>
+                            <input type="text" class="form-control" id="category-name" required>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn-custom btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn-custom btn-primary">Создать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addDishModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-hamburger"></i> Новое блюдо</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-dish-form">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Название блюда</label>
+                                <input type="text" class="form-control" id="dish-name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Категория</label>
+                                <select class="form-select" id="dish-category" required>
+                                    <!-- Categories will be loaded -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Цена (₽)</label>
+                                <input type="number" step="0.01" min="0" class="form-control" id="dish-price" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Статус</label>
+                                <select class="form-select" id="dish-status">
+                                    <option value="true">Доступно</option>
+                                    <option value="false">Недоступно</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Описание</label>
+                            <textarea class="form-control" id="dish-description" rows="3"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn-custom btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn-custom btn-primary">Создать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> Редактирование заказа</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-order-form">
+                        <input type="hidden" id="edit-order-id">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Статус заказа</label>
+                                <select class="form-select" id="edit-order-status">
+                                    <option value="pending">В ожидании</option>
+                                    <option value="preparing">Готовится</option>
+                                    <option value="ready">Готов</option>
+                                    <option value="completed">Завершен</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn-custom btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn-custom btn-primary">Сохранить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Глобальные переменные
+        let adminData = {
+            categories: [],
+            dishes: [],
+            orders: [],
+            reports: {}
+        };
+
+        let ordersChart = null;
+        let revenueChart = null;
+        let categoriesChart = null;
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAdminData();
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // Настройка модальных окон
+            const addCategoryModal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+            const addDishModal = new bootstrap.Modal(document.getElementById('addDishModal'));
+            const editOrderModal = new bootstrap.Modal(document.getElementById('editOrderModal'));
+            
+            // Настройка форм
+            document.getElementById('add-category-form').addEventListener('submit', addCategory);
+            document.getElementById('add-dish-form').addEventListener('submit', addDish);
+            document.getElementById('edit-order-form').addEventListener('submit', updateOrder);
+            document.getElementById('dish-search').addEventListener('input', filterDishes);
+            document.getElementById('orders-filter').addEventListener('change', filterOrders);
+            document.getElementById('chart-period').addEventListener('change', updateChart);
+            
+            // Загружаем отчет по умолчанию (последние 30 дней)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            
+            document.getElementById('report-start-date').value = startDate.toISOString().split('T')[0];
+            document.getElementById('report-end-date').value = endDate.toISOString().split('T')[0];
+            
+            loadReport();
+        });
+
+        // Загрузка данных для админки
+        async function loadAdminData() {
+            try {
+                // Загружаем меню
+                const menuResponse = await fetch('/api/v1/menu');
+                const menuData = await menuResponse.json();
+                adminData.categories = menuData.categories;
+                adminData.dishes = menuData.dishes;
+                
+                // Загружаем заказы
+                await loadOrders();
+                
+                // Обновляем UI
+                updateDashboardStats();
+                renderCategoriesTable();
+                renderDishesTable();
+                renderOrdersTable();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                showNotification('Ошибка загрузки данных', 'error');
+            }
+        }
+
+        // Загрузка заказов
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/v1/orders?limit=100');
+                adminData.orders = await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки заказов:', error);
+            }
+        }
+
+        // Навигация по разделам
+        function showSection(sectionName) {
+            // Скрываем все разделы
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Показываем выбранный раздел
+            document.getElementById(sectionName + '-section').style.display = 'block';
+            
+            // Активируем кнопку
+            document.querySelector(`.nav-item[onclick="showSection('${sectionName}')"]`).classList.add('active');
+            
+            // Загружаем данные для раздела
+            if (sectionName === 'dashboard') {
+                updateDashboardStats();
+            } else if (sectionName === 'reports') {
+                loadReport();
+            }
+        }
+
+        // Обновление дашборда
+        function updateDashboardStats() {
+            // Общее количество блюд
+            document.getElementById('total-dishes').textContent = adminData.dishes.length;
+            
+            // Заказы сегодня
+            const today = new Date().toISOString().split('T')[0];
+            const todayOrders = adminData.orders.filter(order => 
+                order.order_date.split('T')[0] === today
+            );
+            document.getElementById('today-orders').textContent = todayOrders.length;
+            
+            // Выручка сегодня
+            const todayRevenue = todayOrders.reduce((sum, order) => sum + order.total_amount, 0);
+            document.getElementById('today-revenue').textContent = todayRevenue.toFixed(2) + ' ₽';
+            
+            // Популярные блюда
+            renderPopularDishes();
+        }
+
+        // Отображение популярных блюд
+        function renderPopularDishes() {
+            const container = document.getElementById('popular-dishes');
+            
+            // Считаем популярность (просто демо)
+            const popular = adminData.dishes.slice(0, 5);
+            
+            let html = '';
+            popular.forEach((dish, index) => {
+                html += `
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2" 
+                         style="background: #f8f9fa; border-radius: 5px;">
+                        <div>
+                            <strong>${dish.name}</strong>
+                            <div class="text-muted" style="font-size: 0.8rem;">${dish.category?.name || 'Без категории'}</div>
+                        </div>
+                        <div class="text-end">
+                            <div>${dish.price.toFixed(2)} ₽</div>
+                            <div style="font-size: 0.8rem;">Рейтинг: 4.${8 - index}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Обновление времени
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('ru-RU', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('current-time').innerHTML = `
+                <i class="fas fa-calendar"></i> ${dateString} 
+                <i class="fas fa-clock ms-3"></i> ${timeString}
+            `;
+        }
+
+        // Категории
+        function renderCategoriesTable() {
+            const container = document.getElementById('categories-table');
+            
+            let html = '';
+            adminData.categories.forEach(category => {
+                const dishCount = adminData.dishes.filter(dish => dish.category_id === category.id).length;
+                
+                html += `
+                    <tr>
+                        <td><code>${category.id}</code></td>
+                        <td><strong>${category.name}</strong></td>
+                        <td>${dishCount} блюд</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-custom btn-primary btn-sm" 
+                                        onclick="editCategory('${category.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-custom btn-danger btn-sm" 
+                                        onclick="deleteCategory('${category.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Блюда
+        function renderDishesTable() {
+            const container = document.getElementById('dishes-table');
+            const searchQuery = document.getElementById('dish-search').value.toLowerCase();
+            
+            let filteredDishes = adminData.dishes;
+            if (searchQuery) {
+                filteredDishes = adminData.dishes.filter(dish => 
+                    dish.name.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            let html = '';
+            filteredDishes.forEach(dish => {
+                const category = adminData.categories.find(c => c.id === dish.category_id);
+                
+                html += `
+                    <tr>
+                        <td>
+                            <strong>${dish.name}</strong>
+                            ${dish.description ? `<br><small class="text-muted">${dish.description}</small>` : ''}
+                        </td>
+                        <td>${category?.name || 'Без категории'}</td>
+                        <td>${dish.price.toFixed(2)} ₽</td>
+                        <td>
+                            <span class="status-badge ${dish.is_available ? 'status-available' : 'status-unavailable'}">
+                                ${dish.is_available ? 'Доступно' : 'Недоступно'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-custom btn-primary btn-sm" 
+                                        onclick="editDish('${dish.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-custom btn-danger btn-sm" 
+                                        onclick="deleteDish('${dish.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function filterDishes() {
+            renderDishesTable();
+        }
+
+        // Заказы
+        function renderOrdersTable() {
+            const container = document.getElementById('orders-table');
+            const filter = document.getElementById('orders-filter').value;
+            
+            let filteredOrders = adminData.orders;
+            if (filter) {
+                filteredOrders = adminData.orders.filter(order => order.status === filter);
+            }
+            
+            let html = '';
+            filteredOrders.forEach(order => {
+                html += `
+                    <tr>
+                        <td><code>#${order.id.substring(0, 8)}</code></td>
+                        <td>${new Date(order.order_date).toLocaleString('ru-RU')}</td>
+                        <td>${order.customer_name || 'Гость'}</td>
+                        <td>${order.customer_phone || 'Не указан'}</td>
+                        <td>${order.total_amount.toFixed(2)} ₽</td>
+                        <td>
+                            <span class="status-badge" style="background: ${getStatusColor(order.status)}">
+                                ${getStatusText(order.status)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-custom btn-primary btn-sm" 
+                                        onclick="editOrder('${order.id}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-custom btn-danger btn-sm" 
+                                        onclick="deleteOrder('${order.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function filterOrders() {
+            renderOrdersTable();
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'pending': '#fff3cd',
+                'preparing': '#cce5ff',
+                'ready': '#d1ecf1',
+                'completed': '#d4edda'
+            };
+            return colors[status] || '#f8f9fa';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'pending': 'В ожидании',
+                'preparing': 'Готовится',
+                'ready': 'Готов',
+                'completed': 'Завершен'
+            };
+            return texts[status] || status;
+        }
+
+        // Отчеты
+        async function loadReport() {
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+            
+            try {
+                const response = await fetch(`/api/v1/reports/sales?start_date=${startDate}&end_date=${endDate}`);
+                const report = await response.json();
+                
+                adminData.reports = report;
+                
+                // Обновляем статистику
+                document.getElementById('report-total-revenue').textContent = report.total_revenue.toFixed(2) + ' ₽';
+                document.getElementById('report-total-orders').textContent = report.total_orders;
+                document.getElementById('report-avg-order').textContent = report.average_order_value.toFixed(2) + ' ₽';
+                
+                // Обновляем графики
+                updateRevenueChart();
+                updateCategoriesChart();
+                
+            } catch (error) {
+                console.error('Ошибка загрузки отчета:', error);
+                showNotification('Ошибка загрузки отчета', 'error');
+            }
+        }
+
+        function updateRevenueChart() {
+            const ctx = document.getElementById('revenue-chart').getContext('2d');
+            
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+            
+            // Демо данные
+            const labels = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'];
+            const data = [12000, 15000, 18000, 14000, 20000, 22000];
+            
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Выручка (₽)',
+                        data: data,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Динамика выручки'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCategoriesChart() {
+            const ctx = document.getElementById('categories-chart').getContext('2d');
+            
+            if (categoriesChart) {
+                categoriesChart.destroy();
+            }
+            
+            // Демо данные
+            const data = {
+                labels: ['Супы', 'Основные', 'Салаты', 'Напитки', 'Десерты'],
+                datasets: [{
+                    data: [15, 30, 20, 25, 10],
+                    backgroundColor: [
+                        '#3498db',
+                        '#2ecc71',
+                        '#e74c3c',
+                        '#f39c12',
+                        '#9b59b6'
+                    ]
+                }]
+            };
+            
+            categoriesChart = new Chart(ctx, {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Распределение по категориям'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            const period = document.getElementById('chart-period').value;
+            // Здесь можно обновить график заказов
+        }
+
+        // CRUD операции
+        function showAddCategoryModal() {
+            document.getElementById('add-category-form').reset();
+            const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+            modal.show();
+        }
+
+        async function addCategory(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('category-name').value;
+            
+            try {
+                const response = await fetch('/api/v1/menu/categories', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                
+                if (response.ok) {
+                    const category = await response.json();
+                    adminData.categories.push(category);
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+                    modal.hide();
+                    
+                    renderCategoriesTable();
+                    showNotification('Категория добавлена успешно', 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка добавления категории:', error);
+                showNotification('Ошибка добавления категории', 'error');
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (!confirm('Вы уверены, что хотите удалить эту категорию? Все блюда в ней также будут удалены.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/v1/menu/categories/${categoryId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    adminData.categories = adminData.categories.filter(c => c.id !== categoryId);
+                    adminData.dishes = adminData.dishes.filter(d => d.category_id !== categoryId);
+                    
+                    renderCategoriesTable();
+                    renderDishesTable();
+                    updateDashboardStats();
+                    
+                    showNotification('Категория удалена успешно', 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка удаления категории:', error);
+                showNotification('Ошибка удаления категории', 'error');
+            }
+        }
+
+        function showAddDishModal() {
+            document.getElementById('add-dish-form').reset();
+            
+            // Заполняем категории
+            const select = document.getElementById('dish-category');
+            select.innerHTML = adminData.categories.map(category => 
+                `<option value="${category.id}">${category.name}</option>`
+            ).join('');
+            
+            const modal = new bootstrap.Modal(document.getElementById('addDishModal'));
+            modal.show();
+        }
+
+        async function addDish(e) {
+            e.preventDefault();
+            
+            const dishData = {
+                name: document.getElementById('dish-name').value,
+                category_id: document.getElementById('dish-category').value,
+                price: parseFloat(document.getElementById('dish-price').value),
+                description: document.getElementById('dish-description').value,
+                is_available: document.getElementById('dish-status').value === 'true'
+            };
+            
+            try {
+                const response = await fetch('/api/v1/menu/dishes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dishData)
+                });
+                
+                if (response.ok) {
+                    const dish = await response.json();
+                    adminData.dishes.push(dish);
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addDishModal'));
+                    modal.hide();
+                    
+                    renderDishesTable();
+                    updateDashboardStats();
+                    showNotification('Блюдо добавлено успешно', 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка добавления блюда:', error);
+                showNotification('Ошибка добавления блюда', 'error');
+            }
+        }
+
+        async function deleteDish(dishId) {
+            if (!confirm('Вы уверены, что хотите удалить это блюдо?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/v1/menu/dishes/${dishId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    adminData.dishes = adminData.dishes.filter(d => d.id !== dishId);
+                    
+                    renderDishesTable();
+                    updateDashboardStats();
+                    showNotification('Блюдо удалено успешно', 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка удаления блюда:', error);
+                showNotification('Ошибка удаления блюда', 'error');
+            }
+        }
+
+        function editOrder(orderId) {
+            const order = adminData.orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            document.getElementById('edit-order-id').value = order.id;
+            document.getElementById('edit-order-status').value = order.status;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editOrderModal'));
+            modal.show();
+        }
+
+        async function updateOrder(e) {
+            e.preventDefault();
+            
+            const orderId = document.getElementById('edit-order-id').value;
+            const status = document.getElementById('edit-order-status').value;
+            
+            try {
+                const response = await fetch(`/api/v1/orders/${orderId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (response.ok) {
+                    const updatedOrder = await response.json();
+                    const index = adminData.orders.findIndex(o => o.id === orderId);
+                    if (index !== -1) {
+                        adminData.orders[index] = updatedOrder;
+                    }
+                    
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editOrderModal'));
+                    modal.hide();
+                    
+                    renderOrdersTable();
+                    showNotification('Заказ обновлен успешно', 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка обновления заказа:', error);
+                showNotification('Ошибка обновления заказа', 'error');
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm('Вы уверены, что хотите удалить этот заказ?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/v1/orders/${orderId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    adminData.orders = adminData.orders.filter(o => o.id !== orderId);
+                    
+                    renderOrdersTable();
+                    updateDashboardStats();
+                    showNotification('Заказ удален успешно', 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка удаления заказа:', error);
+                showNotification('Ошибка удаления заказа', 'error');
+            }
+        }
+
+        // Вспомогательные функции
+        function generateReport() {
+            alert('Функция экспорта отчета будет реализована в следующей версии');
+        }
+
+        function showNotification(message, type = 'info') {
+            // Создаем уведомление
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                z-index: 10000;
+                animation: slideIn 0.3s;
+            `;
+            
+            if (type === 'success') {
+                notification.style.background = '#27ae60';
+            } else if (type === 'error') {
+                notification.style.background = '#e74c3c';
+            } else {
+                notification.style.background = '#3498db';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Добавляем анимации
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍽️ Ресторан "Вкусный уголок" - Заказ онлайн</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        .admin-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Menu Section */
+        .menu-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .categories {
+            margin-bottom: 30px;
+        }
+
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .category-tab {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-tab:hover {
+            background: #e9ecef;
+        }
+
+        .category-tab.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .dish-card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .dish-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .dish-card h3 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .dish-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .dish-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dish-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .add-to-cart {
+            padding: 8px 16px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .add-to-cart:hover {
+            background: #219653;
+            transform: scale(1.05);
+        }
+
+        /* Order Section */
+        .order-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-items {
+            margin-bottom: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-info h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover {
+            background: #e9ecef;
+        }
+
+        .quantity {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .remove-btn {
+            padding: 5px 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .cart-total {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        /* Order Form */
+        .order-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .submit-order {
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-order:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .submit-order:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        /* Success Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content i {
+            font-size: 4rem;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .modal-content h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-close {
+            padding: 12px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* Empty Cart */
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-cart i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dish-card, .order-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fas fa-utensils"></i> Ресторан "Вкусный уголок"</h1>
+            <p class="subtitle">Закажите любимые блюда онлайн с доставкой на дом</p>
+            <a href="/admin" class="admin-link" target="_blank">
+                <i class="fas fa-cog"></i> Панель администратора
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Menu Section -->
+            <div class="menu-section">
+                <h2><i class="fas fa-book-open"></i> Наше меню</h2>
+                
+                <div class="categories">
+                    <div class="category-tabs" id="category-tabs">
+                        <!-- Categories will be loaded here -->
+                    </div>
+                    
+                    <div class="dishes-grid" id="dishes-container">
+                        <!-- Dishes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Section -->
+            <div class="order-section">
+                <h2><i class="fas fa-shopping-cart"></i> Ваш заказ</h2>
+                
+                <div class="cart-items" id="cart-items">
+                    <div class="empty-cart" id="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <h3>Корзина пуста</h3>
+                        <p>Выберите блюда из меню</p>
+                    </div>
+                    <!-- Cart items will be added here -->
+                </div>
+
+                <div class="cart-total">
+                    <div class="total-line">
+                        <span>Итого:</span>
+                        <span class="total-amount" id="total-amount">0 ₽</span>
+                    </div>
+                </div>
+
+                <form class="order-form" id="order-form">
+                    <div class="form-group">
+                        <label for="customer-name"><i class="fas fa-user"></i> Ваше имя</label>
+                        <input type="text" id="customer-name" placeholder="Иван Иванов" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customer-phone"><i class="fas fa-phone"></i> Телефон</label>
+                        <input type="tel" id="customer-phone" placeholder="+7 (999) 123-45-67" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customer-address"><i class="fas fa-home"></i> Адрес доставки</label>
+                        <input type="text" id="customer-address" placeholder="ул. Примерная, д. 1, кв. 1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customer-comment"><i class="fas fa-comment"></i> Комментарий к заказу</label>
+                        <input type="text" id="customer-comment" placeholder="Пожелания к доставке...">
+                    </div>
+
+                    <button type="submit" class="submit-order" id="submit-order" disabled>
+                        <i class="fas fa-check-circle"></i> Подтвердить заказ
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 Ресторан "Вкусный уголок". Все права защищены.</p>
+            <p>Телефон: +7 (999) 123-45-67 | Время работы: 10:00 - 23:00</p>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="modal" id="success-modal">
+            <div class="modal-content">
+                <i class="fas fa-check-circle"></i>
+                <h2>Заказ успешно оформлен!</h2>
+                <p>Спасибо за ваш заказ! Мы уже начали его готовить.</p>
+                <p>Номер вашего заказа: <strong id="order-number"></strong></p>
+                <p>С вами свяжется наш оператор для подтверждения.</p>
+                <button class="modal-close" onclick="closeModal()">Продолжить заказ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let menuData = {
+            categories: [],
+            dishes: [],
+            dishesByCategory: {}
+        };
+        
+        let cart = [];
+        let currentCategory = 'all';
+
+        // Загрузка меню при старте
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadMenu();
+            updateCartUI();
+            
+            // Настройка формы
+            document.getElementById('order-form').addEventListener('submit', submitOrder);
+        });
+
+        // Загрузка меню с сервера
+        async function loadMenu() {
+            try {
+                const response = await fetch('/api/v1/menu');
+                const data = await response.json();
+                
+                menuData.categories = data.categories;
+                menuData.dishes = data.dishes;
+                
+                // Группируем блюда по категориям
+                menuData.dishesByCategory = {};
+                menuData.dishesByCategory['all'] = menuData.dishes;
+                
+                menuData.categories.forEach(category => {
+                    menuData.dishesByCategory[category.id] = menuData.dishes.filter(
+                        dish => dish.category_id === category.id
+                    );
+                });
+                
+                renderCategories();
+                renderDishes('all');
+                
+            } catch (error) {
+                console.error('Ошибка загрузки меню:', error);
+                showError('Не удалось загрузить меню. Пожалуйста, обновите страницу.');
+            }
+        }
+
+        // Отображение категорий
+        function renderCategories() {
+            const container = document.getElementById('category-tabs');
+            
+            let html = `
+                <div class="category-tab ${currentCategory === 'all' ? 'active' : ''}" 
+                     onclick="changeCategory('all')">
+                    Все блюда
+                </div>
+            `;
+            
+            menuData.categories.forEach(category => {
+                html += `
+                    <div class="category-tab ${currentCategory === category.id ? 'active' : ''}" 
+                         onclick="changeCategory('${category.id}')">
+                        ${category.name}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Отображение блюд
+        function renderDishes(categoryId) {
+            const container = document.getElementById('dishes-container');
+            const dishes = menuData.dishesByCategory[categoryId] || [];
+            
+            if (dishes.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #7f8c8d;">В этой категории пока нет блюд</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            dishes.forEach(dish => {
+                if (dish.is_available) {
+                    html += `
+                        <div class="dish-card">
+                            <h3>${dish.name}</h3>
+                            <p class="dish-description">${dish.description || 'Вкусное блюдо от нашего шеф-повара'}</p>
+                            <div class="dish-footer">
+                                <div class="dish-price">${dish.price.toFixed(2)} ₽</div>
+                                <button class="add-to-cart" onclick="addToCart('${dish.id}')">
+                                    <i class="fas fa-plus"></i> Добавить
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Смена категории
+        function changeCategory(categoryId) {
+            currentCategory = categoryId;
+            renderCategories();
+            renderDishes(categoryId);
+        }
+
+        // Корзина
+        function addToCart(dishId) {
+            const dish = menuData.dishes.find(d => d.id === dishId);
+            if (!dish) return;
+            
+            const existingItem = cart.find(item => item.dish_id === dishId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+                existingItem.item_total = existingItem.quantity * dish.price;
+            } else {
+                cart.push({
+                    dish_id: dishId,
+                    name: dish.name,
+                    price: dish.price,
+                    quantity: 1,
+                    item_total: dish.price
+                });
+            }
+            
+            updateCartUI();
+        }
+
+        function updateCartItem(dishId, newQuantity) {
+            const item = cart.find(item => item.dish_id === dishId);
+            if (!item) return;
+            
+            if (newQuantity < 1) {
+                removeFromCart(dishId);
+                return;
+            }
+            
+            item.quantity = newQuantity;
+            item.item_total = item.quantity * item.price;
+            updateCartUI();
+        }
+
+        function removeFromCart(dishId) {
+            cart = cart.filter(item => item.dish_id !== dishId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const emptyCart = document.getElementById('empty-cart');
+            const submitButton = document.getElementById('submit-order');
+            
+            // Показываем/скрываем пустую корзину
+            if (cart.length === 0) {
+                emptyCart.style.display = 'block';
+                container.innerHTML = '';
+                container.appendChild(emptyCart);
+                submitButton.disabled = true;
+            } else {
+                emptyCart.style.display = 'none';
+                
+                let html = '';
+                let total = 0;
+                
+                cart.forEach(item => {
+                    total += item.item_total;
+                    
+                    html += `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <h4>${item.name}</h4>
+                                <div>${item.price.toFixed(2)} ₽ × ${item.quantity} = ${item.item_total.toFixed(2)} ₽</div>
+                            </div>
+                            <div class="cart-item-actions">
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="updateCartItem('${item.dish_id}', ${item.quantity - 1})">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="quantity">${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="updateCartItem('${item.dish_id}', ${item.quantity + 1})">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <button class="remove-btn" onclick="removeFromCart('${item.dish_id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                submitButton.disabled = false;
+            }
+            
+            // Обновляем итоговую сумму
+            document.getElementById('total-amount').textContent = cart.reduce((sum, item) => sum + item.item_total, 0).toFixed(2) + ' ₽';
+        }
+
+        // Оформление заказа
+        async function submitOrder(e) {
+            e.preventDefault();
+            
+            const submitButton = document.getElementById('submit-order');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформляем заказ...';
+            
+            try {
+                const orderData = {
+                    customer_name: document.getElementById('customer-name').value,
+                    customer_phone: document.getElementById('customer-phone').value,
+                    items: cart.map(item => ({
+                        dish_id: item.dish_id,
+                        quantity: item.quantity,
+                        item_total: item.item_total
+                    }))
+                };
+                
+                const response = await fetch('/api/v1/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (response.ok) {
+                    const order = await response.json();
+                    
+                    // Показываем модальное окно успеха
+                    document.getElementById('order-number').textContent = `#${order.id.substring(0, 8).toUpperCase()}`;
+                    document.getElementById('success-modal').style.display = 'flex';
+                    
+                    // Очищаем корзину
+                    cart = [];
+                    updateCartUI();
+                    
+                    // Очищаем форму
+                    document.getElementById('order-form').reset();
+                    
+                } else {
+                    throw new Error('Ошибка при оформлении заказа');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showError('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-check-circle"></i> Подтвердить заказ';
+            }
+        }
+
+        // Вспомогательные функции
+        function closeModal() {
+            document.getElementById('success-modal').style.display = 'none';
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+
+        // Маска телефона
+        document.getElementById('customer-phone').addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            e.target.value = '+7' + (x[2] ? ' (' + x[2] : '') + (x[3] ? ') ' + x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+    </script>
+</body>
+</html>

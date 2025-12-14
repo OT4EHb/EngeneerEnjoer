@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администратор - Столовая</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 20px; }
+        .nav-tabs .nav-link.active { font-weight: bold; }
+        .table-responsive { max-height: 400px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2">
+                <i class="bi bi-gear text-primary"></i> Панель администратора
+            </h1>
+            <div>
+                <a href="/static/index.html" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-arrow-left"></i> К кассиру
+                </a>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <ul class="nav nav-tabs mb-4" id="adminTabs">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#categories">
+                    <i class="bi bi-tags"></i> Категории
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#dishes">
+                    <i class="bi bi-egg-fried"></i> Блюда
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#orders">
+                    <i class="bi bi-receipt"></i> Все заказы
+                </button>
+            </li>
+        </ul>
+
+        <!-- Содержимое вкладок -->
+        <div class="tab-content">
+            <!-- Вкладка категорий -->
+            <div class="tab-pane fade show active" id="categories">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Управление категориями</h5>
+                            <button class="btn btn-primary btn-sm" onclick="showCategoryModal()">
+                                <i class="bi bi-plus"></i> Добавить категорию
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Название</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categories-table">
+                                    <tr>
+                                        <td colspan="3" class="text-center">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Загрузка...</span>
+                                            </div>
+                                            Загрузка категорий...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка блюд -->
+            <div class="tab-pane fade" id="dishes">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Управление блюдами</h5>
+                            <button class="btn btn-primary btn-sm" onclick="showDishModal()">
+                                <i class="bi bi-plus"></i> Добавить блюдо
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Название</th>
+                                        <th>Цена</th>
+                                        <th>Категория</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dishes-table">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                                <span class="visually-hidden">Загрузка...</span>
+                                            </div>
+                                            Загрузка блюд...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка заказов -->
+            <div class="tab-pane fade" id="orders">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Все заказы</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Период:</label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="date" class="form-control" id="start-date" value="${new Date().toISOString().split('T')[0]}">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="date" class="form-control" id="end-date" value="${new Date().toISOString().split('T')[0]}">
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary w-100" onclick="loadOrders()">
+                                        <i class="bi bi-search"></i> Показать
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Дата/Время</th>
+                                        <th>ID заказа</th>
+                                        <th>Сумма</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table">
+                                    <tr>
+                                        <td colspan="4" class="text-center">
+                                            Выберите период и нажмите "Показать"
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для категории -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить категорию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Название категории</label>
+                            <input type="text" class="form-control" id="categoryName" required>
+                        </div>
+                        <input type="hidden" id="categoryId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCategory()">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для блюда -->
+    <div class="modal fade" id="dishModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить блюдо</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="dishForm">
+                        <div class="mb-3">
+                            <label for="dishName" class="form-label">Название блюда</label>
+                            <input type="text" class="form-control" id="dishName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dishPrice" class="form-label">Цена</label>
+                            <input type="number" class="form-control" id="dishPrice" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dishCategory" class="form-label">Категория</label>
+                            <select class="form-select" id="dishCategory" required>
+                                <option value="">Выберите категорию</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="dishId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="saveDish()">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Наш скрипт -->
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>

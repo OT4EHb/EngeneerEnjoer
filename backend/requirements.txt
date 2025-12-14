@@ -1,0 +1,15 @@
+# Основные зависимости
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+
+# Дополнительные утилиты
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Для работы с SQLite в Docker
+aiosqlite==0.19.0
+
+# Для HTTP клиента в healthcheck
+httpx==0.25.1

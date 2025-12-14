@@ -1,0 +1,17 @@
+# Игнорируемые файлы и папки
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.env
+.vscode/
+.idea/
+*.log
+*.sqlite3
+instance/
+*.db
+*.db-journal
